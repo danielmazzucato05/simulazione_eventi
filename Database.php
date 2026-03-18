@@ -24,16 +24,12 @@ class Database {
             $this->password = $parsed['pass'];
         }
 
-        try {
-            $dsn = "pgsql:host=" . $this->host . ";port=" . $this->port . ";dbname=" . $this->db_name;
-            $this->conn = new PDO($dsn, $this->username, $this->password);
-            
-            // Set error mode
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            
-        } catch(PDOException $exception) {
-            echo "Connection error: " . $exception->getMessage();
-        }
+        // Supabase requires SSL for external connections
+        $dsn = "pgsql:host=" . $this->host . ";port=" . $this->port . ";dbname=" . $this->db_name . ";sslmode=require";
+        $this->conn = new PDO($dsn, $this->username, $this->password);
+        
+        // Set error mode
+        $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         return $this->conn;
     }

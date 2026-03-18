@@ -23,9 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (savedUser) {
         state.user = JSON.parse(savedUser);
     }
-    
+
     document.getElementById('btn-close-modal').addEventListener('click', closeModal);
-    
+
     renderApp();
 });
 
@@ -39,7 +39,7 @@ async function fetchAPI(endpoint, options = {}) {
     if (state.user && state.user.token) {
         headers['Authorization'] = `Bearer ${state.user.token}`;
     }
-    
+
     try {
         const response = await fetch(`${API_BASE}${endpoint}`, {
             ...options,
@@ -48,10 +48,10 @@ async function fetchAPI(endpoint, options = {}) {
                 ...options.headers
             }
         });
-        
+
         const data = await response.json();
         hideLoading();
-        
+
         if (!response.ok) {
             if (response.status === 401) logout(); // Token expired/invalid
             throw new Error(data.message || 'Errore API sconosciuto');
@@ -110,11 +110,11 @@ function renderNavbar() {
         } else {
             links = `<a href="#" onclick="renderEmployeeDashboard()">Dashboard</a>`;
         }
-        
+
         navMenu.innerHTML = `
             ${links}
             <span class="user-badge">${state.user.nome} (${state.user.ruolo})</span>
-            <a href="#" onclick="logout()" style="color:red">Esci</a>
+            <a href="#" onclick="logout()" class="btn-logout">Esci</a>
         `;
     }
 }
@@ -133,12 +133,12 @@ function renderLogin() {
                     <label>Password</label>
                     <input type="password" id="l-password" class="form-control" required>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width:100%">Login</button>
+                <button type="submit" class="btn btn-primary btn-block">Accedi</button>
             </form>
-            <p style="text-align:center; margin-top:15px; font-size:0.9rem">Non hai un account? <a href="#" onclick="renderRegister()">Registrati</a></p>
+            <p class="auth-footer">Non hai un account? <a href="#" onclick="renderRegister()">Registrati</a></p>
         </div>
     `;
-    
+
     document.getElementById('login-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('l-email').value;
@@ -152,7 +152,7 @@ function renderLogin() {
             localStorage.setItem('hub_user', JSON.stringify(state.user));
             showToast('Login completato!');
             renderApp();
-        } catch (err) {}
+        } catch (err) { }
     });
 }
 
@@ -184,12 +184,12 @@ function renderRegister() {
                         <option value="Organizzatore">Organizzatore</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width:100%">Registrati</button>
+                <button type="submit" class="btn btn-primary btn-block">Crea Account</button>
             </form>
-            <p style="text-align:center; margin-top:15px; font-size:0.9rem">Hai già un account? <a href="#" onclick="renderLogin()">Accedi</a></p>
+            <p class="auth-footer">Hai già un account? <a href="#" onclick="renderLogin()">Accedi</a></p>
         </div>
     `;
-    
+
     document.getElementById('register-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const body = {
@@ -203,7 +203,7 @@ function renderRegister() {
             await fetchAPI('/register.php', { method: 'POST', body: JSON.stringify(body) });
             showToast('Registrazione completata! Ora puoi fare login.');
             renderLogin();
-        } catch (err) {}
+        } catch (err) { }
     });
 }
 
@@ -233,21 +233,21 @@ async function renderOrganizerDashboard() {
             </table>
         </div>
     `;
-    
+
     try {
         const res = await fetchAPI('/eventi.php');
         state.events = res.data;
         const tbody = document.getElementById('org-events-list');
-        
+
         if (state.events.length === 0) {
             tbody.innerHTML = `<tr><td colspan="3" style="text-align:center">Nessun evento presente</td></tr>`;
             return;
         }
-        
+
         tbody.innerHTML = state.events.map(ev => `
             <tr>
                 <td><strong>${ev.titolo}</strong></td>
-                <td>${new Date(ev.data).toLocaleDateString('it-IT', {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'})}</td>
+                <td>${new Date(ev.data).toLocaleDateString('it-IT', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
                 <td>
                     <button class="btn btn-outline" onclick="openCheckin('${ev.evento_id}', '${ev.titolo}')">Check-in</button>
                     <button class="btn btn-outline" onclick='openEventForm(${JSON.stringify(ev)})'>Modifica</button>
@@ -255,19 +255,19 @@ async function renderOrganizerDashboard() {
                 </td>
             </tr>
         `).join('');
-    } catch (err) {}
+    } catch (err) { }
 }
 
 function openEventForm(event = null) {
     const isEdit = !!event;
     const title = isEdit ? 'Modifica Evento' : 'Nuovo Evento';
-    
+
     let dateStr = '';
     if (isEdit) {
         // format expected by input type="datetime-local" is YYYY-MM-DDTHH:mm
         const d = new Date(event.data);
         const pad = n => n.toString().padStart(2, '0');
-        dateStr = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        dateStr = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
     }
 
     const html = `
@@ -283,13 +283,13 @@ function openEventForm(event = null) {
             </div>
             <div class="form-group">
                 <label>Descrizione</label>
-                <textarea id="ev-desc" class="form-control" rows="4">${isEdit ? (event.descrizione||'') : ''}</textarea>
+                <textarea id="ev-desc" class="form-control" rows="4">${isEdit ? (event.descrizione || '') : ''}</textarea>
             </div>
-            <button type="submit" class="btn btn-primary" style="width:100%">Salva</button>
+            <button type="submit" class="btn btn-primary btn-block">Salva Cambiamenti</button>
         </form>
     `;
     openModal(title, html);
-    
+
     document.getElementById('event-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = isEdit ? document.getElementById('ev-id').value : null;
@@ -298,9 +298,9 @@ function openEventForm(event = null) {
             data: document.getElementById('ev-data').value,
             descrizione: document.getElementById('ev-desc').value
         };
-        
+
         if (isEdit) body.evento_id = id;
-        
+
         try {
             await fetchAPI('/eventi.php', {
                 method: isEdit ? 'PUT' : 'POST',
@@ -309,26 +309,26 @@ function openEventForm(event = null) {
             showToast(isEdit ? 'Evento aggiornato' : 'Evento creato');
             closeModal();
             renderOrganizerDashboard();
-        } catch (err) {}
+        } catch (err) { }
     });
 }
 
 async function deleteEvent(id) {
-    if(!confirm('Sei sicuro di voler eliminare questo evento?')) return;
+    if (!confirm('Sei sicuro di voler eliminare questo evento?')) return;
     try {
         await fetchAPI(`/eventi.php?id=${id}`, { method: 'DELETE' });
         showToast('Evento eliminato');
         renderOrganizerDashboard();
-    } catch(err) {}
+    } catch (err) { }
 }
 
 async function openCheckin(eventoId, eventoTitolo) {
     try {
         const res = await fetchAPI(`/checkin.php?evento_id=${eventoId}`);
         const iscritti = res.data;
-        
+
         let html = `<p style="margin-bottom:15px; color:var(--text-muted)">Iscritti all'evento: ${iscritti.length}</p>`;
-        
+
         if (iscritti.length === 0) {
             html += `<p>Nessun iscritto a questo evento.</p>`;
         } else {
@@ -352,9 +352,9 @@ async function openCheckin(eventoId, eventoTitolo) {
                 </table>
             </div>`;
         }
-        
+
         openModal(`Check-in: ${eventoTitolo}`, html);
-    } catch (err) {}
+    } catch (err) { }
 }
 
 async function toggleCheckin(iscrizioneId, isChecked) {
@@ -367,7 +367,7 @@ async function toggleCheckin(iscrizioneId, isChecked) {
             })
         });
         showToast('Check-in aggiornato');
-    } catch(err) {
+    } catch (err) {
         // Revert switch visually
         closeModal();
         showToast('Errore di aggiornamento', 'error');
@@ -391,18 +391,18 @@ async function renderEmployeeDashboard() {
             <p>Caricamento...</p>
         </div>
     `;
-    
+
     try {
         const [regRes, eventsRes] = await Promise.all([
             fetchAPI('/iscrizioni.php'),
             fetchAPI('/eventi.php')
         ]);
-        
+
         state.myRegistrations = regRes.data;
         state.events = eventsRes.data;
-        
+
         renderEmployeeLists();
-        
+
     } catch (err) {
         console.error(err);
     }
@@ -410,8 +410,8 @@ async function renderEmployeeDashboard() {
 
 function renderEmployeeLists() {
     const today = new Date();
-    today.setHours(0,0,0,0);
-    
+    today.setHours(0, 0, 0, 0);
+
     // My Registrations List
     const regContainer = document.getElementById('my-regs-list');
     if (state.myRegistrations.length === 0) {
@@ -419,12 +419,12 @@ function renderEmployeeLists() {
     } else {
         regContainer.innerHTML = state.myRegistrations.map(reg => {
             const evDate = new Date(reg.data);
-            evDate.setHours(0,0,0,0);
+            evDate.setHours(0, 0, 0, 0);
             const canCancel = evDate > today;
-            
+
             const exactTime = new Date(reg.data);
             const isPast = exactTime < new Date();
-            
+
             let statusBadge = '';
             if (reg.checkin_effettuato) {
                 statusBadge = '<span class="badge badge-success">Presente</span>';
@@ -433,42 +433,42 @@ function renderEmployeeLists() {
             } else {
                 statusBadge = '<span class="badge badge-pending">Iscritto (in attesa)</span>';
             }
-            
+
             return `
-            <div class="card" style="border-top: 4px solid var(--primary-color)">
+            <div class="card">
                 <h4 class="card-title">${reg.titolo}</h4>
-                <div class="card-date">${new Date(reg.data).toLocaleDateString('it-IT')}</div>
+                <div class="card-date">${new Date(reg.data).toLocaleDateString('it-IT', { day: '2-digit', month: 'long', year: 'numeric' })}</div>
                 <div class="card-desc">Stato: ${statusBadge}</div>
                 <div class="card-actions">
-                    ${canCancel && !reg.checkin_effettuato ? 
-                        `<button class="btn btn-outline" style="width:100%" onclick="cancelRegistration('${reg.evento_id}')">Annulla Iscrizione</button>` : 
-                        `<span style="font-size:0.8rem; color:var(--text-muted)">Annullamento non più possibile</span>`
-                    }
+                    ${canCancel && !reg.checkin_effettuato ?
+                    `<button class="btn btn-outline btn-block" onclick="cancelRegistration('${reg.evento_id}')">Annulla Iscrizione</button>` :
+                    `<span style="font-size:0.8rem; color:var(--text-muted)">Annullamento non più possibile</span>`
+                }
                 </div>
             </div>`;
         }).join('');
     }
-    
+
     // Available Events
     const availContainer = document.getElementById('avail-events-list');
     // Filter out past events and events already registered
     const registeredIds = state.myRegistrations.map(r => r.evento_id);
     const available = state.events.filter(ev => {
         const ed = new Date(ev.data);
-        ed.setHours(0,0,0,0);
+        ed.setHours(0, 0, 0, 0);
         return ed > today && !registeredIds.includes(ev.evento_id);
     });
-    
+
     if (available.length === 0) {
         availContainer.innerHTML = `<p style="grid-column: 1/-1">Nessun nuovo evento disponibile.</p>`;
     } else {
         availContainer.innerHTML = available.map(ev => `
             <div class="card">
                 <h4 class="card-title">${ev.titolo}</h4>
-                <div class="card-date">${new Date(ev.data).toLocaleDateString('it-IT', {dateStyle:'full'})}</div>
-                <div class="card-desc">${ev.descrizione || ''}</div>
+                <div class="card-date">${new Date(ev.data).toLocaleDateString('it-IT', { day: '2-digit', month: 'long', year: 'numeric' })}</div>
+                <div class="card-desc">${ev.descrizione || 'Nessuna descrizione disponibile.'}</div>
                 <div class="card-actions">
-                    <button class="btn btn-primary" style="width:100%" onclick="registerForEvent('${ev.evento_id}')">Iscriviti</button>
+                    <button class="btn btn-primary btn-block" onclick="registerForEvent('${ev.evento_id}')">Iscriviti Ora</button>
                 </div>
             </div>
         `).join('');
@@ -483,18 +483,18 @@ async function registerForEvent(eventoId) {
         });
         showToast('Iscrizione completata con successo!');
         renderEmployeeDashboard(); // Refresh
-    } catch(err) {}
+    } catch (err) { }
 }
 
 async function cancelRegistration(eventoId) {
-    if(!confirm('Sei sicuro di voler annullare l\'iscrizione a questo evento?')) return;
+    if (!confirm('Sei sicuro di voler annullare l\'iscrizione a questo evento?')) return;
     try {
         await fetchAPI(`/iscrizioni.php?evento_id=${eventoId}`, {
             method: 'DELETE'
         });
         showToast('Iscrizione annullata');
         renderEmployeeDashboard(); // Refresh
-    } catch(err) {}
+    } catch (err) { }
 }
 
 // --- Organizer Stats ---
@@ -531,31 +531,31 @@ async function renderStats() {
 async function loadStats() {
     const from = document.getElementById('stat-from')?.value || '';
     const to = document.getElementById('stat-to')?.value || '';
-    
+
     let url = '/stats.php?';
-    if(from) url += `dal=${from}&`;
-    if(to) url += `al=${to}`;
-    
+    if (from) url += `dal=${from}&`;
+    if (to) url += `al=${to}`;
+
     try {
         const res = await fetchAPI(url);
         const tbody = document.getElementById('stats-list');
-        
+
         if (res.data.length === 0) {
             tbody.innerHTML = `<tr><td colspan="5" style="text-align:center">Nessun evento passato in questo periodo.</td></tr>`;
             return;
         }
-        
+
         tbody.innerHTML = res.data.map(stat => `
             <tr>
                 <td><strong>${stat.titolo}</strong></td>
-                <td>${new Date(stat.data).toLocaleDateString('it-IT')}</td>
-                <td>${stat.total_iscritti}</td>
-                <td>${stat.total_checkin || 0}</td>
+                <td><span class="card-date" style="margin-bottom:0">${new Date(stat.data).toLocaleDateString('it-IT')}</span></td>
+                <td><span class="badge badge-pending">${stat.total_iscritti} iscritti</span></td>
+                <td><span class="badge badge-success">${stat.total_checkin || 0} presenti</span></td>
                 <td>
-                    <div style="font-weight:bold">${stat.percentage}%</div>
+                    <div style="font-weight:bold; color:var(--primary-color)">${stat.percentage}%</div>
                     <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${stat.percentage}%"></div></div>
                 </td>
             </tr>
         `).join('');
-    } catch (err) {}
+    } catch (err) { }
 }

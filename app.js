@@ -334,20 +334,31 @@ async function openCheckin(eventoId) {
         const res = await fetchAPI(`/checkin.php?evento_id=${eventoId}`);
         const iscritti = res.data;
 
-        let html = `<p style="margin-bottom:15px; color:var(--text-muted)">Iscritti all'evento: ${iscritti.length}</p>`;
+        let html = `<p style="margin-bottom:1.5rem; color:var(--text-muted); font-size:0.9rem">Partecipanti registrati per questa sessione: <strong>${iscritti.length}</strong></p>`;
 
         if (iscritti.length === 0) {
-            html += `<p>Nessun iscritto a questo evento.</p>`;
+            html += `<div style="text-align:center; padding: 3rem 0; color:var(--text-muted)">
+                        <div style="font-size:3rem; margin-bottom:1rem">📭</div>
+                        <p>Ancora nessun iscritto a questo evento.</p>
+                     </div>`;
         } else {
             html += `
-            <div style="max-height: 400px; overflow-y:auto; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-                <table style="margin-bottom:0">
-                    <thead><tr><th>Dipendente</th><th>Check-in</th></tr></thead>
+            <div style="max-height: 450px; overflow-y:auto; border: 1px solid #f1f5f9; border-radius: var(--radius-round);">
+                <table style="margin-bottom:0; width:100%; border-collapse:collapse">
+                    <thead style="background:#f8fafc">
+                        <tr>
+                            <th style="padding:1rem; text-align:left; font-size:0.75rem; text-transform:uppercase; color:var(--primary-dark)">Dipendente</th>
+                            <th style="padding:1rem; text-align:center; font-size:0.75rem; text-transform:uppercase; color:var(--primary-dark)">Check-in</th>
+                        </tr>
+                    </thead>
                     <tbody>
                         ${iscritti.map(i => `
                             <tr>
-                                <td>${i.cognome} ${i.nome}<br><small>${i.email}</small></td>
-                                <td style="width:80px">
+                                <td style="padding:1.2rem; border-top:1px solid #f1f5f9">
+                                    <div style="font-weight:700; color:var(--text-main)">${i.cognome} ${i.nome}</div>
+                                    <div style="font-size:0.8rem; color:var(--text-muted)">${i.email}</div>
+                                </td>
+                                <td style="padding:1.2rem; border-top:1px solid #f1f5f9; text-align:center; width:100px">
                                     <label class="switch">
                                       <input type="checkbox" ${i.checkin_effettuato ? 'checked' : ''} onchange="toggleCheckin('${i.iscrizione_id}', this.checked)">
                                       <span class="slider"></span>

@@ -3,6 +3,7 @@
     --primary-dark: #065f46; /* Emerald 800 */
     --primary-glow: rgba(16, 185, 129, 0.25);
     --bg-gradient: radial-gradient(circle at top right, #f0fdf4, #f9fafb);
+    --surface-color: #ffffff;
     --surface-glass: rgba(255, 255, 255, 0.85);
     --text-main: #064e3b; /* Darkest Emerald */
     --text-muted: #475569;
@@ -262,15 +263,54 @@ tr:hover td { background: var(--bg-gradient); }
 
 /* MODALS */
 .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(6, 78, 59, 0.4);
-    backdrop-filter: blur(10px);
-}
-.modal {
-    border-radius: var(--radius-xl);
-    box-shadow: 0 50px 100px rgba(0,0,0,0.2);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    transition: opacity 0.3s;
 }
 
-/* GRID */
+.modal {
+    background: var(--surface-color);
+    width: 95%;
+    max-width: 600px;
+    border-radius: var(--radius-xl);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.25);
+    overflow: hidden;
+    animation: modalSlide 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    position: relative;
+    border: 1px solid var(--border-glass);
+}
+
+@keyframes modalSlide {
+    from { transform: scale(0.9) translateY(40px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.modal-header {
+    background: #f8fafc;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border-glass);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.modal-title { font-size: 1.3rem; margin: 0; }
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.3s;
+}
+.btn-close:hover { color: var(--danger); }
+.modal-body { padding: 2rem; }
 .cards-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));

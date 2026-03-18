@@ -20,16 +20,17 @@ class Database {
             $this->host = $parsed['host'];
             $this->port = isset($parsed['port']) ? $parsed['port'] : "5432";
             $this->db_name = ltrim($parsed['path'], '/');
-            $this->username = $parsed['user'];
-            $this->password = $parsed['pass'];
+            $this->username = isset($parsed['user']) ? urldecode($parsed['user']) : '';
+            $this->password = isset($parsed['pass']) ? urldecode($parsed['pass']) : '';
         }
 
         // Supabase requires SSL for external connections
         $dsn = "pgsql:host=" . $this->host . ";port=" . $this->port . ";dbname=" . $this->db_name . ";sslmode=require";
         $this->conn = new PDO($dsn, $this->username, $this->password);
         
-        // Set error mode
+        // Set error mode and compatibility with Supabase pgBouncer (port 6543)
         $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->conn->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
 
         return $this->conn;
     }

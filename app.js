@@ -422,11 +422,23 @@ function renderEmployeeLists() {
             evDate.setHours(0,0,0,0);
             const canCancel = evDate > today;
             
+            const exactTime = new Date(reg.data);
+            const isPast = exactTime < new Date();
+            
+            let statusBadge = '';
+            if (reg.checkin_effettuato) {
+                statusBadge = '<span class="badge badge-success">Presente</span>';
+            } else if (isPast) {
+                statusBadge = '<span class="badge badge-danger">Assente</span>';
+            } else {
+                statusBadge = '<span class="badge badge-pending">Iscritto (in attesa)</span>';
+            }
+            
             return `
             <div class="card" style="border-top: 4px solid var(--primary-color)">
                 <h4 class="card-title">${reg.titolo}</h4>
                 <div class="card-date">${new Date(reg.data).toLocaleDateString('it-IT')}</div>
-                <div class="card-desc">Stato: ${reg.checkin_effettuato ? '<span class="badge badge-success">Presente</span>' : '<span class="badge badge-pending">Iscritto</span>'}</div>
+                <div class="card-desc">Stato: ${statusBadge}</div>
                 <div class="card-actions">
                     ${canCancel && !reg.checkin_effettuato ? 
                         `<button class="btn btn-outline" style="width:100%" onclick="cancelRegistration('${reg.evento_id}')">Annulla Iscrizione</button>` : 

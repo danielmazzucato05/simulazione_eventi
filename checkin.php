@@ -45,12 +45,12 @@ elseif ($method === 'PUT' || $method === 'POST') {
     }
     
     $ora_checkin = $status ? date('Y-m-d H:i:s') : null;
+    $statusStr = $status ? 'true' : 'false';
     
     $query = "UPDATE iscrizioni SET checkin_effettuato = :status, ora_checkin = :ora_checkin WHERE iscrizione_id = :id";
     $stmt = $db->prepare($query);
-    $statusInt = $status ? 1 : 0;
     
-    $stmt->bindParam(':status', $statusInt, PDO::PARAM_INT);
+    $stmt->bindParam(':status', $statusStr);
     $stmt->bindParam(':ora_checkin', $ora_checkin);
     $stmt->bindParam(':id', $iscrizione_id);
     

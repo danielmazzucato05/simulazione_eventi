@@ -10,8 +10,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $data = getJsonInput();
 
-$nome = filter_var($data['nome'] ?? '', FILTER_SANITIZE_STRING);
-$cognome = filter_var($data['cognome'] ?? '', FILTER_SANITIZE_STRING);
+$nome = strip_tags($data['nome'] ?? '');
+$cognome = strip_tags($data['cognome'] ?? '');
 $email = filter_var($data['email'] ?? '', FILTER_SANITIZE_EMAIL);
 $password = $data['password'] ?? '';
 $ruolo = $data['ruolo'] ?? 'Dipendente';

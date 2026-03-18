@@ -36,9 +36,9 @@ elseif ($method === 'POST') {
     requireOrganizer($db);
     $data = getJsonInput();
     
-    $titolo = filter_var($data['titolo'] ?? '', FILTER_SANITIZE_STRING);
+    $titolo = strip_tags($data['titolo'] ?? '');
     $data_evento = $data['data'] ?? '';
-    $descrizione = filter_var($data['descrizione'] ?? '', FILTER_SANITIZE_STRING);
+    $descrizione = strip_tags($data['descrizione'] ?? '');
     
     if (empty($titolo) || empty($data_evento)) {
         sendJsonResponse(400, false, "Titolo and Data are required.");
@@ -65,9 +65,9 @@ elseif ($method === 'PUT') {
         sendJsonResponse(400, false, "Evento ID is required.");
     }
     
-    $titolo = filter_var($data['titolo'] ?? '', FILTER_SANITIZE_STRING);
+    $titolo = strip_tags($data['titolo'] ?? '');
     $data_evento = $data['data'] ?? '';
-    $descrizione = filter_var($data['descrizione'] ?? '', FILTER_SANITIZE_STRING);
+    $descrizione = strip_tags($data['descrizione'] ?? '');
     
     $query = "UPDATE eventi SET titolo = :titolo, data = :data, descrizione = :descrizione WHERE evento_id = :id";
     $stmt = $db->prepare($query);

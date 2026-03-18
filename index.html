@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Events - Hub</title>
+    <meta name="description" content="Gestione Eventi Formativi Aziendali.">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="container nav-content">
+            <h1 class="logo">Hub<span>Eventi</span></h1>
+            <nav id="nav-menu">
+                <!-- Navigation inserted dynamically -->
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container Content -->
+    <main class="container" id="app-content">
+        <!-- Views are rendered here by JavaScript -->
+        <div id="loading" class="hidden">Caricamento in corso...</div>
+    </main>
+
+    <!-- Modals (for Event editing, Confirmation etc) -->
+    <div id="modal-container" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modal-title">Titolo</h3>
+                <button class="btn-close" id="btn-close-modal">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Modal content dynamically inserted -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden">Messaggio</div>
+
+    <script src="app.js"></script>
+</body>
+</html>

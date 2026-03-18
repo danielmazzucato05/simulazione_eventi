@@ -247,10 +247,10 @@ async function renderOrganizerDashboard() {
         tbody.innerHTML = state.events.map(ev => `
             <tr>
                 <td><strong>${ev.titolo}</strong></td>
-                <td>${new Date(ev.data).toLocaleDateString('it-IT', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+                <td><span class="card-date" style="margin-bottom:0">${new Date(ev.data).toLocaleDateString('it-IT', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span></td>
                 <td>
-                    <button class="btn btn-outline" onclick="openCheckin('${ev.evento_id}', '${ev.titolo}')">Check-in</button>
-                    <button class="btn btn-outline" onclick='openEventForm(${JSON.stringify(ev)})'>Modifica</button>
+                    <button class="btn btn-outline" onclick="openCheckin('${ev.evento_id}')">Check-in</button>
+                    <button class="btn btn-outline" onclick="openEventFormByID('${ev.evento_id}')">Modifica</button>
                     <button class="btn btn-danger" onclick="deleteEvent('${ev.evento_id}')">Elimina</button>
                 </td>
             </tr>
@@ -322,7 +322,14 @@ async function deleteEvent(id) {
     } catch (err) { }
 }
 
-async function openCheckin(eventoId, eventoTitolo) {
+function openEventFormByID(id) {
+    const event = state.events.find(e => e.evento_id == id);
+    openEventForm(event);
+}
+
+async function openCheckin(eventoId) {
+    const event = state.events.find(e => e.evento_id == eventoId);
+    const eventoTitolo = event ? event.titolo : 'Evento';
     try {
         const res = await fetchAPI(`/checkin.php?evento_id=${eventoId}`);
         const iscritti = res.data;

@@ -1,3 +1,9 @@
+-- Drop existing tables and types to start fresh
+DROP TABLE IF EXISTS iscrizioni CASCADE;
+DROP TABLE IF EXISTS eventi CASCADE;
+DROP TABLE IF EXISTS utenti CASCADE;
+DROP TYPE IF EXISTS user_role CASCADE;
+
 -- Create ENUM for user roles
 CREATE TYPE user_role AS ENUM ('Dipendente', 'Organizzatore');
 

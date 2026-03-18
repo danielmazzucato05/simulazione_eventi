@@ -2,18 +2,19 @@
 class Database {
     // You should replace these with your actual Supabase credentials
     // Note: For Railway deployment, we will use environment variables
-    private $host = "aws-0-eu-central-1.pooler.supabase.com"; // Default for European Supabase, but use Env later
+    private $host = "aws-1-eu-west-1.pooler.supabase.com";
     private $port = "6543";
     private $db_name = "postgres";
-    private $username = "postgres.xxxx";
-    private $password = "yourpassword";
+    private $username = "postgres.wmpkgholmxxpfqyncger";
+    private $password = "progetto26ITS";
     public $conn;
 
     public function getConnection() {
         $this->conn = null;
 
-        // Try getting from Env vars first (for Railway)
-        $db_url = getenv('DATABASE_URL');
+        // Try getting from Env vars first (for Railway/Render)
+        // Trim quotes just in case they were accidentally pasted in the dashboard
+        $db_url = trim(getenv('DATABASE_URL') ?: '', '"\' ');
         if($db_url) {
             // parse postgres://user:pass@host:port/dbname
             $parsed = parse_url($db_url);
